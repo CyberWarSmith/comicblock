@@ -107,7 +107,8 @@ def build_request(cfg, key, kind, guide=None, refs=(), outputs=None):
                                  "are" if len(refs) > 1 else "is"))
     prompt = intro + extra + design_text(ch) + avoid + " " + style + tail
     return dict(prompt=" ".join(prompt.split()), refs=ref_list, width=1536, height=1024,
-                outputs=int(outputs or cfg["generation"]["outputs"]), features=[])
+                outputs=int(outputs or cfg["generation"]["outputs"]), features=[],
+                import_cmd="python -m comicblock sheet-import <project> %s %s <file> [<file> ...]" % (key, kind))
 
 
 def _log(cfg, pid, entry):

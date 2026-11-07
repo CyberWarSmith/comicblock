@@ -33,9 +33,10 @@ class ManualProvider(Provider):
         with open(os.path.join(d, "README.txt"), "w", encoding="utf-8") as fh:
             fh.write("Panel %s  -  %d x %d, %d outputs\n\n" % (pid, req["width"], req["height"], req["outputs"]))
             fh.write("1. In your image tool, choose a model that accepts several reference images.\n")
-            fh.write("2. Attach these images IN THIS ORDER (the blockout must be first):\n   ")
+            fh.write("2. Attach these images IN THIS ORDER (image 01 must be first: it sets the layout):\n   ")
             fh.write("\n   ".join(lines))
             fh.write("\n3. Paste prompt.txt as the prompt. Set the size as close to %d x %d as the tool allows.\n" % (req["width"], req["height"]))
-            fh.write("4. Save the results, then: python -m comicblock import <project> %s <file> [<file> ...]\n" % pid)
+            fh.write("4. Save the results, then: %s\n" % req.get(
+                "import_cmd", "python -m comicblock import <project> %s <file> [<file> ...]" % pid))
         print("manual: %s  (prompt.txt + %d references in order)" % (d, len(req["refs"])))
         return Result("manual", meta={"folder": d})
