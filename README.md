@@ -33,7 +33,8 @@ don't need to write code.
   for "MPFB", and click Install. MPFB is GPL-licensed and is not bundled here; you install it yourself.
 - **Python 3.9+** with `pip install -r requirements.txt` (PyYAML, Pillow, numpy).
 - **Character sheets** for each character: one or two approved images (a full body, plus a head or expressions).
-  They are the only source of likeness and style, so they decide the quality of everything.
+  They are the only source of likeness and style, so they decide the quality of everything. Don't have any? The
+  [guided character design](#designing-characters-guided-qa) makes them with you.
 - **An image model that accepts several reference images** and follows the layout of the first:
   - Built in: [Scenario](https://www.scenario.com) (GPT Image 2.5 Sunburst by default), which needs an API key.
   - The **manual** mode needs no API: it prepares the prompt and references for any web tool that takes multiple
@@ -51,12 +52,8 @@ claude
 Then ask: *"Check my setup and walk me through the starter example."* Claude will run the checks, build the
 example set, stage its three panels, and show you each blockout. Then ask: *"Start a new project for my comic"*.
 
-**No character designs yet?** Ask *"Help me design my first character."* The
-[character-design skill](.claude/skills/character-design/SKILL.md) interviews you a step at a time, covering who they
-are, their height and build, their face, hair and costume, and the details that tell left from right. It writes the
-brief into `project.yaml`, and it renders the character's mannequin front and side at true height as a proportion
-guide. Then it generates turnaround and expression sheets from that guide (asking before it spends anything) and
-walks you through judging, cleaning up and locking them.
+**No character designs yet?** Ask *"Help me design my first character."* See
+[Designing characters](#designing-characters-guided-qa) below.
 
 ## Quick start (command line)
 
@@ -74,6 +71,49 @@ python -m comicblock sheet    examples/starter ada --dry   # character sheet: pr
 
 Going from a clone to a first generated panel should take about an hour, most of it installing Blender and MPFB
 and preparing sheets.
+
+## Designing characters (guided Q&A)
+
+New to this, with only an idea for your cast? In Claude Code, ask *"Help me design my first character."* The
+[character-design skill](.claude/skills/character-design/SKILL.md) takes you from the idea to approved character
+sheets, a question or two at a time:
+
+1. **Style.** You settle the look of the whole comic first, in visual terms (line, shading, palette, light), so
+   every character shares it.
+2. **Who they are.** Name, role and three personality words. These shape the acting, not the costume.
+3. **Body.** True height, build and age. These become the character's mannequin, the same body every panel uses.
+4. **What we see.** Face, hair, costume layer by layer, a palette, and at least one **left/right tell** (a watch
+   on the LEFT wrist) so the panels never mirror them. It also records what to avoid. Genre words get translated
+   into the specific features you mean ("vampire" otherwise brings pointed ears and grey skin), and famous costume
+   names are kept out (they get refused, and refusals still charge).
+5. **Brief.** Claude writes the answers into `project.yaml` (a `design:` block and a one-line `look:`) and into
+   `characters/<name>/brief.md`, then reads them back to you for a yes.
+6. **Proportion guide.** Blender renders the character's own mannequin front and side at true height. You check
+   the height and build against the rest of the cast before any drawing happens.
+7. **Drafts.** The turnaround is generated **over that guide**, so the sheet matches the body the panels will use.
+   This is the same idea as the panels: Blender decides structure, the image model decides appearance. Claude asks
+   before spending anything; with no API, the manual mode prepares everything for any web tool.
+8. **Judge, clean up, lock.** You check every draft at full size against a checklist:
+   - proportions match the guide
+   - front and side show the same person
+   - the tells are on the right side
+   - nothing extra was added
+
+   When a draft misses, the fix goes into the brief rather than another reroll. Then you paint out any stray marks,
+   lock the sheet, and optionally make an expression sheet from it.
+
+![proportion guide](docs/images/guide_ada.png)
+
+*The proportion guide for the starter's Ada (1.68 m): the image model draws her turnaround over this.*
+
+Without Claude, the same steps are:
+
+```
+python -m comicblock sheet        <project> <character> --dry                # guide + the exact prompt, no spend
+python -m comicblock sheet        <project> <character> [--ref sketch.png]   # turnaround drafts -> sheets/drafts/
+python -m comicblock sheet        <project> <character> --kind expressions   # from the approved turnaround
+python -m comicblock sheet-import <project> <character> turnaround <files>   # drafts made by hand
+```
 
 ## Watching it happen in Blender (optional)
 
