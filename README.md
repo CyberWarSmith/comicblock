@@ -67,6 +67,28 @@ python -m comicblock review   examples/starter all  # blockout beside outputs ->
 Going from a clone to a first generated panel should take about an hour, most of it installing Blender and MPFB
 and preparing sheets.
 
+## Watching it happen in Blender (optional)
+
+By default comicblock runs Blender hidden in the background. If you'd rather keep Blender open and watch sets
+build and panels stage (and nudge things by hand), start the **bridge** in Blender, then add `--live`:
+
+1. In Blender, open the Scripting workspace, open `blender_addon/comicblock_bridge.py` in the Text Editor, and
+   press Alt+P. Alternatively, install it once from Edit > Preferences > Add-ons > Install from Disk, then use
+   Start Server in the 3D view's sidebar (N) > comicblock tab.
+2. Run `python -m comicblock stage examples/starter 2 --live`. The panel stages in your open window. `build`,
+   `plot`, `stage` and `render` all take `--live`.
+
+Live runs switch Blender to the project's `build/set.blend` when needed. They refuse to touch a file with unsaved
+changes, so nothing you're working on gets lost. To keep a hand adjustment, save it as its own file, then run
+`render <project> <id> --live`, which renders the scene exactly as it stands.
+
+**Claude Code can work in your open Blender too.** The repo's `.mcp.json` registers a small MCP server
+(`tools/blender_mcp_server.py`, which needs [uv](https://docs.astral.sh/uv/)) with tools to run Python in the
+session, list the scene, and render the current camera. Claude Code asks you to approve it the first time.
+
+The bridge listens on 127.0.0.1:9876 only (set `COMICBLOCK_BRIDGE_PORT` to change the port). Anything on your
+machine that can reach that port can run Python as you, so stop the server when you're done.
+
 ## A project
 
 A project is a folder. Copy `examples/starter` to start one.

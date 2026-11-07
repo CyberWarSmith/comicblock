@@ -5,7 +5,10 @@
     python -m comicblock plan     <project>                  # floor plan with cameras -> build/plan.png
     python -m comicblock plot     <project> [CAM ...]        # empty-set renders per plot camera -> build/plot/
     python -m comicblock stage    <project> <id ...|all> [--save]   # blockouts -> blockout/<id>.png + .json
-    python -m comicblock render   <project> <id> <file.blend> # hand-adjusted scene: render as it stands, no restage
+    python -m comicblock render   <project> <id> <file.blend | --live>   # hand-adjusted scene: render as it stands
+
+    build, plot, stage and render take --live: run in the Blender window you have open (start the bridge add-on in
+    blender_addon/comicblock_bridge.py first) so you can watch, instead of a hidden headless Blender.
     python -m comicblock prompt   <project> <id ...>         # print the prompt and references (no spend)
     python -m comicblock generate <project> <id ...> [--provider P] [--outputs N] [--dry]
     python -m comicblock import   <project> <id> <image ...> # bring in results made by hand (manual provider)
@@ -72,7 +75,7 @@ def cmd_doctor(ns):
 
 def cmd_build(ns):
     cfg = _cfg(ns)
-    rep = blender.run(cfg, "build")
+    rep = blender.run(cfg, "build", live=ns.live)
     from . import plan
     print("built", os.path.join(cfg["paths"]["build"], "set.blend"))
     for k, v in rep.items():
@@ -87,13 +90,20 @@ def cmd_plan(ns):
 
 def cmd_plot(ns):
     cfg = _cfg(ns)
-    done = blender.run(cfg, "plot", ns.cams, blend=blender.set_blend(cfg))
+    done = blender.run(cfg, "plot", ns.cams, blend=blender.set_blend(cfg), live=ns.live)
     print("plot renders in", os.path.join(cfg["paths"]["build"], "plot"), ", ".join(done))
 
 
 def cmd_stage(ns):
     cfg = _cfg(ns)
-    metas = blender.run(cfg, "stage", ns.ids + (["--save"] if ns.save else []), blend=blender.set_blend(cfg))
+    extra = ["--save"] if ns.save else []
+    if ns.live:                                          # one request per panel: watch each one land
+        from . import panels as PN
+        metas = []
+        for pid in PN.select(PN.load(cfg["root"]), ns.ids):
+            metas += blender.run(cfg, "stage", [pid] + extra, blend=blender.set_blend(cfg), live=True)
+    else:
+        metas = blender.run(cfg, "stage", ns.ids + extra, blend=blender.set_blend(cfg))
     for m in metas:
         print("%-8s lens %5.1f mm  features: %s" % (m["panel"], m["lens"], ", ".join(m["features"]) or "-"))
         print("         %s" % m["file"])
@@ -104,9 +114,11 @@ def cmd_stage(ns):
 
 def cmd_render(ns):
     cfg = _cfg(ns)
-    if not os.path.isfile(ns.blend):
+    if ns.blend and not os.path.isfile(ns.blend):
         raise SystemExit("No such .blend: %s" % ns.blend)
-    m = blender.run(cfg, "render", [ns.id], blend=os.path.abspath(ns.blend))
+    if not ns.blend and not ns.live:
+        raise SystemExit("Give the adjusted .blend, or --live to render the scene open in Blender right now.")
+    m = blender.run(cfg, "render", [ns.id], blend=os.path.abspath(ns.blend) if ns.blend else None, live=ns.live)
     print("%-8s rendered as it stands, lens %.1f mm  features: %s\n         %s" % (
         m["panel"], m["lens"], ", ".join(m["features"]) or "-", m["file"]))
     print("Make sure panel %s's action text in panels.py matches the new pose." % ns.id)
@@ -163,11 +175,13 @@ def main(argv=None):
         return sp
     ids = lambda sp: sp.add_argument("ids", nargs="*", default=["all"])
     add("doctor", cmd_doctor)
-    add("build", cmd_build)
+    live = lambda sp: sp.add_argument("--live", action="store_true",
+                                      help="run in the Blender you have open (bridge add-on) instead of headless")
+    add("build", cmd_build, live)
     add("plan", cmd_plan)
-    add("plot", cmd_plot, lambda sp: sp.add_argument("cams", nargs="*"))
-    add("stage", cmd_stage, ids, lambda sp: sp.add_argument("--save", action="store_true"))
-    add("render", cmd_render, lambda sp: sp.add_argument("id"), lambda sp: sp.add_argument("blend"))
+    add("plot", cmd_plot, lambda sp: sp.add_argument("cams", nargs="*"), live)
+    add("stage", cmd_stage, ids, lambda sp: sp.add_argument("--save", action="store_true"), live)
+    add("render", cmd_render, lambda sp: sp.add_argument("id"), lambda sp: sp.add_argument("blend", nargs="?"), live)
     add("prompt", cmd_prompt, lambda sp: sp.add_argument("ids", nargs="+"))
     add("generate", cmd_generate, lambda sp: sp.add_argument("ids", nargs="+"),
         lambda sp: sp.add_argument("--provider"), lambda sp: sp.add_argument("--outputs", type=int),

@@ -20,13 +20,30 @@ python -m comicblock doctor   <project>                    # check Blender, MPFB
 python -m comicblock build    <project>                    # set + cast -> build/set.blend (+ build/plan.png)
 python -m comicblock plot     <project> [CAM ...]          # empty-set renders per plot camera -> build/plot/
 python -m comicblock stage    <project> <id ...|all> [--save]
-python -m comicblock render   <project> <id> <file.blend>  # artist adjusted a staged scene by hand: render as is
+python -m comicblock render   <project> <id> <file.blend> | --live   # adjusted by hand: render as is
 python -m comicblock prompt   <project> <id ...>           # the exact prompt + references; spends nothing
 python -m comicblock generate <project> <id ...> [--provider scenario|manual|dry] [--outputs N]
 python -m comicblock import   <project> <id> <image ...>   # results made by hand in a web tool
 python -m comicblock review   <project> <id ...|all> [--name NAME]
 python -m comicblock fit      <project> <character> <body.obj> [--up y|z]   # optional MPFB body fit
 ```
+
+### Live Blender (optional)
+
+`build`, `plot`, `stage` and `render` take `--live`: they run in the Blender window the user has open, through
+the bridge add-on (`blender_addon/comicblock_bridge.py`: Alt+P in Blender's Text Editor, or Start Server in the
+sidebar's comicblock tab). Use it when the user wants to watch or adjust by hand. Otherwise, use the default
+headless runs.
+
+- Live runs open `build/set.blend` if another file is open, and refuse if that file has unsaved changes. Never
+  work around that refusal: ask the user to save their file first.
+- `render <project> <id> --live` renders the open scene as it stands, after the user has adjusted it.
+- The `blender` MCP server (`.mcp.json`) gives you `blender_ping`, `blender_scene_info`, `blender_exec` and
+  `blender_render` on the same session. Use them to inspect what the user changed (rig locations, a camera they
+  moved), then write those values back into `panels.py`. Treat the open scene as the user's work:
+  - read before you write
+  - don't delete or reset anything without asking
+  - don't save over their file
 
 ## The loop: stage, check, generate, review
 

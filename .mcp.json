@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "blender": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--script", "tools/blender_mcp_server.py"],
+      "env": {}
+    }
+  }
+}
