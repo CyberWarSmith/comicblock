@@ -1,0 +1,22 @@
+# per-machine Claude Code settings
+.claude/settings.local.json
+
+# generated per project (rebuild with `comicblock build` / `stage`)
+**/build/
+**/blockout/
+**/gen/
+**/review/
+**/manual/
+**/.cache/
+**/cast/*.targets.json
+
+# your own projects live here by default; remove this line to commit them
+projects/
+
+# credentials: never commit
+*.csv
+.env
+
+__pycache__/
+*.pyc
+*.blend1

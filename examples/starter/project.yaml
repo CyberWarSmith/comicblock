@@ -1,0 +1,91 @@
+# comicblock project: the starter example (one small room, two placeholder characters, three panels).
+# Copy this folder to start your own project. Units are metres; +y is north; the floor is z = 0.
+
+name: Starter
+
+# Path to blender.exe, or auto (PATH, then the usual install folders). Blender 5.1 tested; 4.2+ should work.
+blender: auto
+
+# The style block, appended to every prompt. A new style = new character sheets + a new style block; nothing else.
+style: >-
+  Hand-drawn 2D animation cel style, flat inked line art, smooth simple cel shading, muted earthy palette,
+  warm lamplight.
+
+# One or two sentences describing the location in general. Features in frame are added per panel (set.features).
+setting: >-
+  The setting is a small, cosy study in an old townhouse at night: plain plaster walls, dark wooden floorboards,
+  a dark beamed ceiling.
+
+characters:
+  ada:
+    name: Ada
+    height: 1.68                     # true height in metres (the visible body)
+    look: >-
+      the woman with a short dark bob and round glasses, in a mustard cardigan over a white shirt, dark trousers
+      and brown boots
+    sheets: [sheets/ada_sheet.png]   # local files (uploaded once and cached), or provider asset ids
+    mpfb:
+      macros: {gender: 0.0, age: 0.5, muscle: 0.45, weight: 0.45, proportions: 0.5}
+  ben:
+    name: Ben
+    height: 1.82
+    look: >-
+      the lanky man with curly red hair and a short beard, in a green raincoat over a grey jumper, jeans and
+      trainers
+    sheets: [sheets/ben_sheet.png]
+    mpfb:
+      macros: {gender: 1.0, age: 0.5, muscle: 0.5, weight: 0.4, proportions: 0.5}
+
+set:
+  script: set.py
+  bounds: [0.0, 5.0, 0.0, 4.2]       # where a dolly-in camera may move (the room)
+  rooms:
+    study: [0.0, 5.0, 0.0, 4.2]
+  palette:                           # colour overrides / additions (r, g, b in 0-1)
+    wall: [0.52, 0.47, 0.38]
+
+  # Named features: sample points (world xyz) and the prompt text used when any point is in frame and unoccluded.
+  # requires: only counted when that fourth wall is shown.
+  features:
+    door:
+      points: [[3.9, 4.2, 1.0], [3.5, 4.2, 1.8], [4.3, 4.2, 0.5]]
+      text: a plain panelled wooden door with a brass knob
+    window:
+      points: [[5.0, 2.0, 1.5], [5.0, 1.6, 1.1], [5.0, 2.4, 2.2]]
+      text: a tall arched window with dark night sky beyond, red curtains either side
+    desk:
+      points: [[4.6, 2.0, 0.76], [4.35, 1.4, 0.7], [4.35, 2.6, 0.7], [4.8, 2.45, 1.0]]
+      text: a wooden writing desk under the window with a brass desk lamp and a stack of books
+    shelves:
+      points: [[0.3, 2.0, 1.2], [0.3, 1.0, 1.8], [0.3, 3.0, 0.6]]
+      text: tall wooden bookshelves packed with books along the wall
+    armchair:
+      points: [[1.6, 3.3, 0.6], [1.6, 3.6, 0.9]]
+      text: a dark green leather armchair on a red rug
+    lamp:
+      points: [[0.75, 3.75, 1.55]]
+      text: a standard lamp with a cream shade, lit
+    chandelier:
+      points: [[2.3, 2.2, 2.35], [2.0, 2.2, 2.4]]
+      text: a small brass chandelier with candle bulbs
+    sideboard:
+      points: [[2.4, 0.3, 0.6], [1.6, 0.3, 0.8], [3.2, 0.3, 0.8]]
+      text: a low wooden sideboard with a gilt-framed picture hung above it
+      requires: 4W_Study
+
+  # The camera plot: a few fixed cameras per set, sitcom style. Direction and height keep a scene coherent.
+  cameras:
+    WIDE:    {pos: [2.5, -2.4, 1.55], look: [2.5, 3.0, 1.15], lens: 22}
+    DOOR:    {pos: [1.0, 0.6, 1.55], look: [3.9, 4.0, 1.2], lens: 24}
+    DESK:    {pos: [2.2, 0.8, 1.45], look: [4.4, 2.1, 1.0], lens: 24}
+    REVERSE: {pos: [4.4, 3.8, 1.55], look: [1.8, 0.0, 1.15], lens: 22, fourth: [4W_Study]}
+
+generation:
+  # scenario: Scenario API (needs credentials). manual: writes the prompt and ordered reference images to
+  # manual/<id>/ for any web tool, then `comicblock import`. dry: prints the prompt only.
+  provider: dry
+  model: model_openai-gpt-image-2-5-sunburst
+  outputs: 2
+  quality: high
+  credentials: ~/.comicblock/scenario.csv   # CSV with columns id,secret (a Scenario API key). Never commit it.
+  scenario_project: null                    # your Scenario project id, or set SCENARIO_PROJECT_ID

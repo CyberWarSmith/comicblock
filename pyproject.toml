@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "comicblock"
+version = "0.1.0"
+description = "Blockout-staged comic panels: Blender decides structure, an image model decides appearance."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = ["PyYAML>=6.0", "Pillow>=10.0", "numpy>=1.24"]
+
+[project.scripts]
+comicblock = "comicblock.cli:main"
+
+[tool.setuptools]
+packages = ["comicblock", "comicblock.bl", "comicblock.providers"]
