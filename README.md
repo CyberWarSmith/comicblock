@@ -51,6 +51,13 @@ claude
 Then ask: *"Check my setup and walk me through the starter example."* Claude will run the checks, build the
 example set, stage its three panels, and show you each blockout. Then ask: *"Start a new project for my comic"*.
 
+**No character designs yet?** Ask *"Help me design my first character."* The
+[character-design skill](.claude/skills/character-design/SKILL.md) interviews you a step at a time, covering who they
+are, their height and build, their face, hair and costume, and the details that tell left from right. It writes the
+brief into `project.yaml`, and it renders the character's mannequin front and side at true height as a proportion
+guide. Then it generates turnaround and expression sheets from that guide (asking before it spends anything) and
+walks you through judging, cleaning up and locking them.
+
 ## Quick start (command line)
 
 ```
@@ -62,6 +69,7 @@ python -m comicblock prompt   examples/starter 2    # the exact prompt and refer
 python -m comicblock generate examples/starter 2 --provider manual   # or scenario, once configured
 python -m comicblock import   examples/starter 2 result1.png result2.png
 python -m comicblock review   examples/starter all  # blockout beside outputs -> review/*.png
+python -m comicblock sheet    examples/starter ada --dry   # character sheet: proportion guide + prompt
 ```
 
 Going from a clone to a first generated panel should take about an hour, most of it installing Blender and MPFB

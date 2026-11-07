@@ -9,7 +9,7 @@ class DryProvider(Provider):
 
     def generate(self, pid, req, out_dir):
         print("=" * 100)
-        print("PANEL %s  %dx%d  outputs %d  model %s" % (pid, req["width"], req["height"], req["outputs"], self.gen["model"]))
+        print("REQUEST %s  %dx%d  outputs %d  model %s" % (pid, req["width"], req["height"], req["outputs"], self.gen["model"]))
         print("features in frame:", ", ".join(req["features"]) or "-")
         print("references, in order:")
         for i, (label, ref) in enumerate(req["refs"], 1):

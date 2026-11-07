@@ -24,6 +24,16 @@ characters:
       the woman with a short dark bob and round glasses, in a mustard cardigan over a white shirt, dark trousers
       and brown boots
     sheets: [sheets/ada_sheet.png]   # local files (uploaded once and cached), or provider asset ids
+    design:                          # the brief `comicblock sheet` draws from (see the character-design skill)
+      role: a translator who works late and hates being interrupted
+      age: early thirties
+      build: slight, narrow shoulders, upright posture
+      face: oval face, round tortoiseshell glasses, straight dark brows
+      hair: short dark bob with a blunt fringe
+      costume: mustard cardigan over a white collared shirt, dark straight trousers, brown ankle boots
+      palette: mustard, white, charcoal, tan
+      tells: a thin red watch on her LEFT wrist
+      avoid: no jewellery, no hat
     mpfb:
       macros: {gender: 0.0, age: 0.5, muscle: 0.45, weight: 0.45, proportions: 0.5}
   ben:
@@ -33,6 +43,16 @@ characters:
       the lanky man with curly red hair and a short beard, in a green raincoat over a grey jumper, jeans and
       trainers
     sheets: [sheets/ben_sheet.png]
+    design:
+      role: Ada's flatmate, cheerful and chronically late
+      age: late twenties
+      build: tall and lanky, long arms, slight stoop
+      face: long face, short ginger beard, freckles
+      hair: curly red hair, collar length
+      costume: green hooded raincoat over a grey crew-neck jumper, blue jeans, white trainers
+      palette: green, grey, denim blue, white
+      tells: a canvas satchel strap across his body from his RIGHT shoulder
+      avoid: no hat, no glasses
     mpfb:
       macros: {gender: 1.0, age: 0.5, muscle: 0.5, weight: 0.4, proportions: 0.5}
 

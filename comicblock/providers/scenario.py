@@ -105,8 +105,10 @@ class ScenarioProvider(Provider):
 
     def generate(self, pid, req, out_dir):
         refs = [self.upload(ref) for _, ref in req["refs"]]
-        body = {"prompt": req["prompt"], "referenceImages": refs, "numOutputs": req["outputs"],
+        body = {"prompt": req["prompt"], "numOutputs": req["outputs"],
                 "quality": self.gen.get("quality", "high"), "width": req["width"], "height": req["height"]}
+        if refs:
+            body["referenceImages"] = refs
         body.update(self.gen.get("extra") or {})
         st, r = self.call("/generate/custom/" + self.gen["model"], body)
         if st == 429:

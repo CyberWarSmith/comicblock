@@ -107,6 +107,43 @@ def plot(cfg, names=None, size=(1536, 1024)):
     return done
 
 
+def guide(cfg, key):
+    """Proportion guide for a character's sheet: the mannequin alone, standing, front and side, orthographic, at
+    true height. Writes build/guides/<key>_front.png and <key>_side.png (the CLI joins them)."""
+    from comicblock.poses import STAND
+    if key not in C.cast_keys():
+        raise SystemExit("No mannequin for %s: add the character to project.yaml and run build first." % key)
+    room = bpy.data.collections.get(kit.ROOM)
+    was = room.hide_render if room else None
+    if room:
+        room.hide_render = True
+    PR.clear()
+    C.show_cast([key])
+    arm = C.rig(key)
+    PO.pose(arm, STAND)
+    PO.place(arm, (0.0, 0.0), (0.0, -1.0))
+    h = float(C.body(key)["cb_height"])
+    out_dir = os.path.join(cfg["paths"]["build"], "guides")
+    os.makedirs(out_dir, exist_ok=True)
+    cam = FR.camera()
+    cam.data.type = "ORTHO"
+    cam.data.ortho_scale = h * 1.12
+    sc = bpy.context.scene
+    files = []
+    try:
+        for view, pos in (("front", (0.0, -6.0, h * 0.5)), ("side", (6.0, 0.0, h * 0.5))):
+            FR.aim(pos, (0.0, 0.0, h * 0.5), 50, 768, 1024)
+            sc.render.filepath = os.path.join(out_dir, "%s_%s.png" % (key, view))
+            bpy.ops.render.render(write_still=True)
+            files.append(sc.render.filepath)
+    finally:
+        cam.data.type = "PERSP"
+        if room:
+            room.hide_render = was
+    print("CB guide", key, "%.3f m" % h)
+    return dict(files=files, height=h)
+
+
 def render_as_is(cfg, pid, fourth=()):
     """Render a .blend the artist has adjusted by hand, exactly as it stands (no posing, no framing), and record
     the features in frame. Re-staging would reset their work. The prompt's action text still comes from panels.py,

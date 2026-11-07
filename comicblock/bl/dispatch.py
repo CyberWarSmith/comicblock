@@ -38,6 +38,8 @@ def run(rt, live=False):
         return out
     if cmd == "render":
         return S.render_as_is(cfg, args[0])
+    if cmd == "guide":
+        return S.guide(cfg, args[0])
     if cmd == "fit":
         from comicblock.bl import fit
         return fit.run(cfg, *args)

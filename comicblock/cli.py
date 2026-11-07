@@ -13,6 +13,9 @@
     python -m comicblock generate <project> <id ...> [--provider P] [--outputs N] [--dry]
     python -m comicblock import   <project> <id> <image ...> # bring in results made by hand (manual provider)
     python -m comicblock review   <project> <id ...|all> [--name NAME]   # contact sheet -> review/<name>.png
+    python -m comicblock sheet    <project> <character> [--kind turnaround|expressions] [--dry] [--ref F]
+                                                            # character sheet drafts -> sheets/drafts/
+    python -m comicblock sheet-import <project> <character> <kind> <image ...>   # drafts made by hand
     python -m comicblock fit      <project> <character> <body.obj> [--up y|z]   # optional MPFB body fit
 """
 import argparse
@@ -162,6 +165,18 @@ def cmd_fit(ns):
     print("Run `comicblock build` again to use it.")
 
 
+def cmd_sheet(ns):
+    from . import sheets
+    cfg = _cfg(ns)
+    return sheets.run(cfg, ns.character, ns.kind, provider="dry" if ns.dry else ns.provider, outputs=ns.outputs,
+                      refs=ns.ref or (), use_guide=not ns.no_guide, live=ns.live)
+
+
+def cmd_sheet_import(ns):
+    from . import sheets
+    sheets.import_drafts(_cfg(ns), ns.character, ns.kind, ns.images)
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(prog="comicblock", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -188,6 +203,15 @@ def main(argv=None):
         lambda sp: sp.add_argument("--dry", action="store_true"))
     add("import", cmd_import, lambda sp: sp.add_argument("id"), lambda sp: sp.add_argument("images", nargs="+"))
     add("review", cmd_review, ids, lambda sp: sp.add_argument("--name"))
+    add("sheet", cmd_sheet, lambda sp: sp.add_argument("character"),
+        lambda sp: sp.add_argument("--kind", default="turnaround", choices=("turnaround", "expressions")),
+        lambda sp: sp.add_argument("--provider"), lambda sp: sp.add_argument("--outputs", type=int),
+        lambda sp: sp.add_argument("--dry", action="store_true"),
+        lambda sp: sp.add_argument("--ref", action="append", help="artist sketch/reference image (repeatable)"),
+        lambda sp: sp.add_argument("--no-guide", action="store_true"), live)
+    add("sheet-import", cmd_sheet_import, lambda sp: sp.add_argument("character"),
+        lambda sp: sp.add_argument("kind", choices=("turnaround", "expressions")),
+        lambda sp: sp.add_argument("images", nargs="+"))
     add("fit", cmd_fit, lambda sp: sp.add_argument("character"), lambda sp: sp.add_argument("mesh"),
         lambda sp: sp.add_argument("--up", default="y", choices=("y", "z")))
     ns = p.parse_args(argv)

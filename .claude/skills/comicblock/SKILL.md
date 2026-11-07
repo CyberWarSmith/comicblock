@@ -25,6 +25,7 @@ python -m comicblock prompt   <project> <id ...>           # the exact prompt + 
 python -m comicblock generate <project> <id ...> [--provider scenario|manual|dry] [--outputs N]
 python -m comicblock import   <project> <id> <image ...>   # results made by hand in a web tool
 python -m comicblock review   <project> <id ...|all> [--name NAME]
+python -m comicblock sheet    <project> <character> [--kind turnaround|expressions] [--dry]   # see character-design
 python -m comicblock fit      <project> <character> <body.obj> [--up y|z]   # optional MPFB body fit
 ```
 
@@ -125,8 +126,9 @@ headless runs.
    `chair`, `shelves`, `chandelier`; see `comicblock/bl/kit.py`), the features with sample points, and 3-5
    plot cameras.
 4. `doctor`, `build`, then `plot`. Show the user `build/plan.png` and the plot renders before staging anything.
-5. Character sheets come from the user. If they have none yet, say plainly that results depend on them; the
-   placeholders in the starter only prove the pipeline.
+5. Character sheets come from the user. If they have none yet, use the `character-design` skill: it interviews
+   them and makes sheets drawn over each character's own mannequin (`comicblock sheet`). Say plainly that every
+   panel depends on the sheets; the placeholders in the starter only prove the pipeline.
 
 ## Setup problems
 

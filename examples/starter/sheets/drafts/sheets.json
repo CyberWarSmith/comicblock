@@ -1,0 +1,17 @@
+{
+  "ben_turnaround": [
+    {
+      "time": "2026-11-07T14:15:37",
+      "provider": "manual",
+      "model": "model_openai-gpt-image-2-5-sunburst",
+      "status": "manual",
+      "cost": null,
+      "job": null,
+      "outputs": [],
+      "prompt": "The first image is a proportion guide: a plain grey mannequin of this character, front view on the left and side view on the right, at their true height and build. Draw a character model sheet of Ben over exactly these proportions: full body, front view on the left and side view on the right, standing straight with arms relaxed at the sides, both views the same size, feet on one ground line. The mannequin only sets the proportions: draw the character fully dressed in their costume. Age: late twenties. Build: tall and lanky, long arms, slight stoop. Face: long face, short ginger beard, freckles. Hair: curly red hair, collar length. Costume: green hooded raincoat over a grey crew-neck jumper, blue jeans, white trainers. Palette: green, grey, denim blue, white. Distinguishing details: a canvas satchel strap across his body from his RIGHT shoulder. Avoid: no hat, no glasses. Hand-drawn 2D animation cel style, flat inked line art, smooth simple cel shading, muted earthy palette, warm lamplight. Plain light flat background. Only this one character, shown twice. No props, no text, no labels, no signature, no watermark.",
+      "refs": [
+        "guide"
+      ]
+    }
+  ]
+}
